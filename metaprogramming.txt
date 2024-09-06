@@ -49,3 +49,235 @@ You can modify the methods or attributes of classes on creation.
 iv- ORM (Object-Relational Mappers): 
 Libraries like Django use metaclasses to construct model classes dynamically, integrating database schema constraints
 
+
+Advanced Example: Enforcing Singleton Pattern via Metaclasses
+A metaclass can enforce that only one instance of a class is created (i.e., a Singleton).
+
+class SingletonMeta(type):
+    _instances = {}
+    
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class SingletonClass(metaclass=SingletonMeta):
+    def __init__(self):
+        print("Creating instance")
+
+# Usage
+s1 = SingletonClass()
+s2 = SingletonClass()
+
+print(s1 is s2)  # Output: True
+
+2. type() for Dynamic Class Creation
+=====================================
+
+The type() function is a powerful Python tool for creating classes dynamically. Normally, you'd define a class using class ClassName:, but type() allows you to define a class programmatically.
+
+Syntax:
+# Basic type() usage to create a dynamic class
+MyDynamicClass = type('MyDynamicClass', (object,), {'attr': 42})
+
+print(MyDynamicClass().attr)  # Output: 42
+
+Here, type is called with three arguments:
+i- Name of the class (as a string).
+ii- Tuple of base classes.
+iii- Dictionary of class attributes/methods.
+
+
+Use Cases:
+i- Dynamic Class Creation: 
+type() is useful in situations where the class needs to be defined at runtime, such as dynamic API generation.
+
+ii- Mocking/Testing: 
+You can use type() to quickly generate mock classes for testing purposes.
+
+
+3. Decorators
+==============
+Decorators in Python are another form of metaprogramming. They allow you to modify the behavior of functions or methods at runtime. 
+defined by @
+There are two types of decorators:
+
+i- Function decorators: Modify the behavior of a function or method.
+ii- Class decorators: Modify the behavior of an entire class.
+
+i- Function Decorators:
+A function decorator takes a function as an argument and returns a new function. Here's a simple example:
+
+def my_decorator(func):
+    def wrapper():
+        print("Before function call")
+        func()
+        print("After function call")
+    return wrapper
+
+@my_decorator
+def say_hello():
+    print("Hello!")
+
+say_hello()
+
+# Output:
+# Before function call
+# Hello!
+# After function call
+
+ii- Class Decorators:
+Class decorators modify or augment classes.
+
+def class_decorator(cls):
+    cls.extra = "I am extra!"
+    return cls
+
+@class_decorator
+class MyClass:
+    pass
+
+print(MyClass.extra)  # Output: I am extra!
+
+Use Cases of Decorators:
+i- Aspect-Oriented Programming:
+You can use decorators to implement cross-cutting concerns like logging, caching, authentication, and monitoring.
+
+ii- Memoization: 
+Function results can be cached using decorators for optimization.
+
+iii- Class Augmentation: 
+Modify or enhance classes by adding attributes, methods, or properties using class decorators.
+
+
+4. Introspection
+=================
+Python offers a range of tools for introspection, allowing code to examine itself or other code objects. With introspection, you can dynamically discover properties about objects, classes, and functions at runtime.
+
+Key Functions for Introspection:
+i- type(): Returns the type of an object.
+ii- dir(): Lists the attributes and methods of an object.
+iii- hasattr(): Checks if an object has a specific attribute.
+iv- getattr(): Gets the value of an attribute.
+v- setattr(): Sets the value of an attribute.
+
+Example:
+
+class MyClass:
+    def method(self):
+        return "Hello"
+
+obj = MyClass()
+print(type(obj))  # <class '__main__.MyClass'>
+print(dir(obj))   # List of methods and attributes
+print(getattr(obj, 'method')())  # "Hello"
+
+
+Use Cases:
+i- Dynamic Property Lookup: You can dynamically explore and manipulate object properties.
+ii- Reflection for Debugging: Useful in debugging or creating development tools where dynamic introspection helps to log, trace, or monitor the state of objects.
+
+
+5. Monkey Patching
+==================
+- Monkey patching is a form of metaprogramming where you modify or extend classes or modules at runtime, after they have been defined.
+- It involves changing or adding methods or attributes to existing modules or classes.
+- It allows for on-the-fly changes without modifying the original source code.
+
+Example:
+
+class MyClass:
+    def greet(self):
+        return "Hello!"
+
+def new_greet(self):
+    return "Hi!"
+
+# Monkey patch the original method
+MyClass.greet = new_greet
+
+obj = MyClass()
+print(obj.greet())  # Output: Hi!
+
+Use Cases:
+i- Hotfixes: 
+Apply patches to third-party libraries or even standard Python libraries without changing their source code.
+Ex- 
+When we work on a large project, we may encounter a situation where the third-party library is not working well. So we attempt to revise (or change) it from our project. This process is known as monkey patching in Python.
+
+ii- Testing: Temporarily replace parts of a system with mock implementations to test code behavior.
+
+
+6. Descriptors
+===============
+Descriptors are a low-level mechanism in Python that allows you to customize the behavior of attribute access. They are used extensively in Python, especially in property management.
+
+The __get__, __set__, and __delete__ Methods:
+Descriptors are objects that define one or more of these special methods:
+
+__get__(self, instance, owner) - To retrieve an attribute.
+__set__(self, instance, value) - To set an attribute.
+__delete__(self, instance) - To delete an attribute.
+
+Example:
+class Descriptor:
+    def __get__(self, instance, owner):
+        return "Get method called"
+
+class MyClass:
+    attr = Descriptor()
+
+obj = MyClass()
+print(obj.attr)  # Output: Get method called
+
+Use Cases:
+i- Property Management: Descriptors are used to implement properties (@property).
+ii- ORMs and Frameworks: Used in Django and SQLAlchemy to implement field-level access for models.
+
+7. __call__ Method
+===================
+The __call__ method makes an instance of a class callable like a function. This is another powerful feature that enables highly dynamic behavior.
+
+Example:
+class CallableClass:
+    def __call__(self):
+        print("Instance called like a function")
+
+obj = CallableClass()
+obj()  # Output: Instance called like a function
+
+Use Cases:
+i- Function Objects: Implement function-like objects that maintain state between calls.
+ii- Advanced Decorators: Create objects that behave as decorators while keeping state.
+
+
+8. __getitem__, __setitem__, and __delitem__ Methods
+====================================================
+These special methods control indexing behavior for custom objects, similar to list or dictionary indexing.
+
+Example:
+class CustomContainer:
+    def __init__(self):
+        self.data = {}
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __setitem__(self, key, value):
+        self.data[key] = value
+
+    def __delitem__(self, key):
+        del self.data[key]
+
+container = CustomContainer()
+container['name'] = 'Python'
+print(container['name'])  # Output: Python
+
+
+Use Cases:
+i- Custom Containers: Design custom objects that mimic lists, dictionaries, or other collection types.
+ii- Data Structures: Implement custom data structures with specific behavior.
+
+
+
+
