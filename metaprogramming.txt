@@ -1,2 +1,51 @@
 MetaProgramming:
 ================
+- Metaprogramming is a programming technique where a program can modify or generate code at runtime. 
+- Python, being a dynamic language, provides powerful mechanisms for metaprogramming, particularly through metaclasses.
+- The central concepts in Python metaprogramming include metaclasses, decorators, and dynamic class creation.
+
+1. Metaclasses in Python
+========================
+- In Python, everything is an object, including classes. A class is an instance of a metaclass. By default, the metaclass in Python is 'type' .
+- A metaclass is responsible for creating classes, which means a metaclass defines how a class behaves.
+- Metaclasses provide a way to modify or control the creation and behavior of classes.
+
+Key Concepts of Metaclasses:
+============================
+i- type as a Metaclass: 
+By default, Python uses type as the metaclass for all classes.
+
+ii- Class Factory: 
+Metaclasses can be thought of as factories for classes. Just as classes are factories for objects, metaclasses are factories for classes.
+
+iii- __new__ vs __init__: 
+Metaclasses use the __new__ method to control object creation, and __init__ to initialize the class once it's created.
+
+Syntax of Metaclasses:
+You can define a metaclass using the metaclass keyword when defining a class , below, Meta is a metaclass that controls the creation of MyClass.
+
+class Meta(type):
+    def __new__(cls, name, bases, dct):
+        print(f"Creating class {name}")
+        return super().__new__(cls, name, bases, dct)
+
+class MyClass(metaclass=Meta):
+    pass
+
+
+Output:
+Creating class MyClass
+
+Use Cases of Metaclasses:
+i- Enforcing Class Constraints:
+You can use metaclasses to enforce rules on the classes they create.
+
+ii- Auto-registering Classes: 
+When a new class is created, a metaclass can automatically register the class in a global registry.
+
+iii- Custom Class Behavior: 
+You can modify the methods or attributes of classes on creation.
+
+iv- ORM (Object-Relational Mappers): 
+Libraries like Django use metaclasses to construct model classes dynamically, integrating database schema constraints
+
